@@ -1,0 +1,148 @@
+{
+  "id": "5974",
+  "slug": "cinnamon-rolls",
+  "metadata": {
+    "title": "Zimtschnecken",
+    "descritpion": "",
+    "language": "de",
+    "timestamp": "2025-12-26T14:58:18.000Z",
+    "image": "https://images.unsplash.com/photo-1609126979532-0f514232d1a8?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "time": 240
+  },
+  "components": [
+    {
+      "id": "c000",
+      "type": "title",
+      "level": 2,
+      "text": {
+        "de": "Zutaten",
+        "en": "Ingredients"
+      }
+    },
+    {
+      "id": "c001",
+      "type": "ingredients",
+      "items": {
+        "de": [
+          "485g Mehl",
+          "260ml Milch (warm)",
+          "1 Päckchen Trockenhefe",
+          "1 Päckchen Vanille Zucke",
+          "3 EL Zucker",
+          "1 Tl Backpulver",
+          "70g Butter",
+          "1 Ei",
+          "Füllung:",
+          "100g Butter",
+          "110g Zucker",
+          "3-4 tbsp Zimt",
+          "Frosting:",
+          "100g Frischkäse",
+          "55g warme Butter",
+          "65g Staubzucker",
+          "Vanillezucker"
+        ],
+        "en": [
+          "485g flour",
+          "260ml milk (warm)",
+          "1 packet dried yeast",
+          "1 packet vanilla sugar",
+          "3 tbsp sugar",
+          "1 tsp baking powder",
+          "70g butter",
+          "1 egg",
+          "Filling:",
+          "100g butter",
+          "110g sugar",
+          "3-4 tbsp cinnamon",
+          "Frosting:",
+          "100g Creamcheese",
+          "55g warm butter",
+          "65g powdered sugar",
+          "vanilla sugar"
+        ]
+      }
+    },
+    {
+      "id": "c002",
+      "type": "title",
+      "level": 2,
+      "text": {
+        "de": "Zubereitung",
+        "en": "Preparation"
+      }
+    },
+    {
+      "id": "c003",
+      "type": "step",
+      "heading": {
+        "de": "Teig",
+        "en": "Dough"
+      },
+      "text": {
+        "de": "Hefe in warmer Milch auflösen und alle Zutaten vermischen.",
+        "en": "Dissolve the yeast in warm milk and mix all the ingredients together."
+      }
+    },
+    {
+      "id": "c004",
+      "type": "step",
+      "heading": {
+        "de": "Teig",
+        "en": "Dough"
+      },
+      "text": {
+        "de": "1-2 Stunden gehen lassen bis sich Volumen verdoppelt hat.",
+        "en": "Let the dough rise for 1–2 hours until it has doubled in size."
+      }
+    },
+    {
+      "id": "c005",
+      "type": "step",
+      "heading": {
+        "de": "Teig",
+        "en": "Dough"
+      },
+      "text": {
+        "de": "Teig ausrollen, mit Zimtfüllung bestreichen, teilen und ca. 40min gehen lassen.",
+        "en": "Roll out the dough, spread it with the cinnamon filling, divide it, and let it rise for about 40 minutes."
+      }
+    },
+    {
+      "id": "c006",
+      "type": "step",
+      "heading": {
+        "de": "Backen",
+        "en": "Baking"
+      },
+      "text": {
+        "de": "Anschließend etwas Milch hinzufügen und 25min bei 180 °C Ober/Unterhitze backen.",
+        "en": "Then add milk and bake for 25 minutes at 180 °C (top and bottom heat)."
+      }
+    },
+    {
+      "id": "c007",
+      "type": "step",
+      "heading": {
+        "de": "Frosting",
+        "en": "Frosting"
+      },
+      "text": {
+        "de": "Die Butter mit dem Zucker aufschlagen und Frischkäse unterrühren.",
+        "en": "Beat the butter with the sugar, then mix in the cream cheese."
+      }
+    },
+    {
+      "id": "c008",
+      "type": "step",
+      "heading": {
+        "de": "Frosting",
+        "en": "Frosting"
+      },
+      "text": {
+        "de": "Die warmen Zimtschnecken mit dem Frosting bestreichen und schmecken lassen.",
+        "en": "Spread the warm cinnamon rolls with the frosting and enjoy."
+      }
+    }
+  ]
+}

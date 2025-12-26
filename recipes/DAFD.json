@@ -1,0 +1,79 @@
+{
+  "id": "DAFD",
+  "slug": "glutenfree-bundt-cake",
+  "metadata": {
+    "title": "Glutenfreier Gugelhupf 🍰",
+    "description": "",
+    "language": "de",
+    "timestamp": "2025-12-04T15:31:56.000Z",
+    "image": "https://images.unsplash.com/photo-1668617111358-20877d1b08fd?q=80&w=689&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  "components": [
+    {
+      "id": "c000",
+      "type": "title",
+      "level": 2,
+      "text": {
+        "de": "Zutaten",
+        "en": "Ingredients"
+      }
+    },
+    {
+      "id": "c001",
+      "type": "ingredients",
+      "items": {
+        "de": [
+          "4 Eier",
+          "40ml Öl",
+          "10 EL glutenfreies Mehl",
+          "8 EL Staubzucker",
+          "1 Päckchen Vanillezucker",
+          "3 tsp baking powder",
+          "2 TL cacao powder"
+        ],
+        "en": [
+          "4 eggs",
+          "40ml oil",
+          "10 EL glutenfree flour",
+          "8 EL powdered sugar",
+          "1 packet vanille sugar",
+          "3 TL baking powder",
+          "2 tsp cacao powder"
+        ]
+      }
+    },
+    {
+      "id": "c002",
+      "type": "title",
+      "level": 2,
+      "text": {
+        "de": "Zubereitung",
+        "en": "Preparation"
+      }
+    },
+    {
+      "id": "c003",
+      "type": "step",
+      "heading": {
+        "de": "Teig",
+        "en": "Dough"
+      },
+      "text": {
+        "de": "Alle Zutaten vermischen und in der Hälfte trennen. Kakaopulver hinzufügen.",
+        "en": "Mix all ingredients. Spilt dough in half and add cocoa powder."
+      }
+    },
+    {
+      "id": "c004",
+      "type": "step",
+      "heading": {
+        "de": "Backen",
+        "en": "Bake"
+      },
+      "text": {
+        "de": "In eine Gugelhupfform füllen und bei 180 °C Ober/Unterhitze ca. 30 min backen.",
+        "en": "Put into a baking form and bake at 180 °C (350 °F) top/bottom heat for about 30 min."
+      }
+    }
+  ]
+}

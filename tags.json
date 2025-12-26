@@ -1,0 +1,89 @@
+{
+  "tags": [
+    {
+      "id": "0-10",
+      "de": "0-10min",
+      "en": "0-10min"
+    },
+    {
+      "id": "1030",
+      "de": "10-30min",
+      "en": "10-30min"
+    },
+    {
+      "id": "LES1",
+      "de": " < 60min",
+      "en": "< 60min"
+    },
+    {
+      "id": "MOR1",
+      "de": "60+ mins",
+      "en": "60+ mins"
+    },
+    {
+      "id": "LES2",
+      "de": "< 2h",
+      "en": "< 2hr"
+    },
+    {
+      "id": "MOR2",
+      "de": "120+ mins",
+      "en": "120+ mins"
+    },
+    {
+      "id": "GLFR",
+      "de": "Glutenfrei",
+      "en": "Gluten-Free"
+    },
+    {
+      "id": "MEAT",
+      "de": "Fleisch",
+      "en": "Meat"
+    },
+    {
+      "id": "FISH",
+      "de": "Fisch",
+      "en": "Fish"
+    },
+    {
+      "id": "VEGG",
+      "de": "Gemüse",
+      "en": "Vegetables"
+    },
+    {
+      "id": "RICE",
+      "de": "Reis",
+      "en": "Rice"
+    },
+    {
+      "id": "NOOD",
+      "de": "Nudeln",
+      "en": "Noodles"
+    },
+    {
+      "id": "CASS",
+      "de": "Auflauf",
+      "en": "Casserole"
+    },
+    {
+      "id": "GRIL",
+      "de": "Grillen",
+      "en": "Grilling"
+    },
+    {
+      "id": "BRKF",
+      "de": "Frühstück",
+      "en": "Breakfast"
+    },
+    {
+      "id": "LOWC",
+      "de": "Low Carb",
+      "en": "Low Carb"
+    },
+    {
+      "id": "DESS",
+      "de": "Desserts",
+      "en": "Desserts"
+    }
+  ]
+}

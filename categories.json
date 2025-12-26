@@ -1,0 +1,46 @@
+{
+  "categories": [
+    {
+      "id": "GLFR",
+      "name": {"de": "Glutenfrei", "en": "Gluten-Free"},
+      "tags": ["GLFR"],
+      "color": "bg-red-500",
+      "icon": "star"
+    },
+    {
+      "id": "QUIC",
+      "name": {"de": "Schnell & Einfach", "en": "Quick & Easy"},
+      "tags": ["0-10", "1030"],
+      "color": "bg-blue-500",
+      "icon": "star"
+    },
+    {
+      "id": "SNCK",
+      "name": {"de": "Snack", "en": "Snack"},
+      "tags": ["LOWC", "SNCK"],
+      "color": "bg-yellow-500",
+      "icon": "star"
+    },
+    {
+      "id": "VEGG",
+      "name": {"de": "Vegetarisch", "en": "Vegetarian"},
+      "tags": ["VEGG", "SALD"],
+      "color": "bg-green-500",
+      "icon": "star"
+    },
+    {
+      "id": "VEGN",
+      "name": {"de": "Vegan", "en": "Vegan"},
+      "tags": ["VEGG"],
+      "color": "bg-emerald-500",
+      "icon": "star"
+    },
+    {
+      "id": "DESS",
+      "name": {"de": "Desserts", "en": "Desserts"},
+      "tags": ["DESS", "CHOC", "CAKE"],
+      "color": "bg-pink-500",
+      "icon": "star"
+    }
+  ]
+}

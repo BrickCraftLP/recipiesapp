@@ -1,0 +1,73 @@
+{
+  "id": "D93E",
+  "slug": "energy-balls",
+  "metadata": {
+    "title": "Energy Balls ⚡️",
+    "description": "Sie sind perfekt für einen Snack zwischendurch - bewahrt sie in einer geschlossenen Box auf!! 💛🥥\n\nDa sie sehr intensiv sind, würde ich empfehlen nur 1-3 Kugeln zu essen!!",
+    "language": "de",
+    "timestamp": "2025-12-26T15:41:08.000Z",
+    "image": "https://images.unsplash.com/photo-1678554500191-3885a6fbf8c2?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  "components": [
+    {
+      "id": "c000",
+      "type": "title",
+      "level": 2,
+      "text": {
+        "de": "Zutaten",
+        "en": "Ingredients"
+      }
+    },
+    {
+      "id": "c001",
+      "type": "ingredients",
+      "items": {
+        "de": [
+          "250g Dattelpaste",
+          "250g Geriebene Mandeln",
+          "2 EL Kakaopulver",
+          "2-5 EL Kokussnuss Öl"
+        ],
+        "en": [
+          "250g Date Paste",
+          "250g Ground almonds",
+          "2 Tbsp Unsweetened Cacao powder",
+          "2-5 Tbsp Coconut Oil"
+        ]
+      }
+    },
+    {
+      "id": "c002",
+      "type": "title",
+      "level": 2,
+      "text": {
+        "de": "Zubereitung",
+        "en": "Preparation"
+      }
+    },
+    {
+      "id": "c003",
+      "type": "step",
+      "heading": {
+        "de": "Teig",
+        "en": "Dough"
+      },
+      "text": {
+        "de": "Alle Zutaten vermischen",
+        "en": "Mix all ingredients (if too dry add Coconut oil)"
+      }
+    },
+    {
+      "id": "c004",
+      "type": "step",
+      "heading": {
+        "de": "Bällchen rollen",
+        "en": "Let it roll"
+      },
+      "text": {
+        "de": "Kleine Kugeln formen und nach Belieben mit Kokosnussraspeln, Nüssen etc. bestreuen",
+        "en": "Form smalls balls and add coconut flakes, nuts,… if you like"
+      }
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "id": "1GFB",
+  "slug": "gluten-free-bread",
+  "metadata": {
+    "title": "Gluten-Free Bread",
+    "descritpion": "A soft and delicious gluten-free bread recipe.",
+    "language": "de",
+    "timestamp": "2025-12-03T13:39:45.000Z",
+    "image": "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=800&q=80",
+    "time": 120
+  },
+  "components": [
+    {
+      "id": "chap1",
+      "type": "title",
+      "level": 2,
+      "text": {
+        "de": "Zutaten",
+        "en": "Ingredients"
+      }
+    },
+    {
+      "id": "ingr1",
+      "type": "ingredients",
+      "items": {
+        "de": [
+          "100g Buchweizen Mehl",
+          "80g Hafermehl",
+          "150g glutenfreies Universalmehl",
+          "50g Maizena",
+          "1 1/2 EL Olivenöl",
+          "250ml Wasser lauwarm",
+          "200ml Milch",
+          "2g Flohsamenschalenpulver",
+          "1 TL Zucker",
+          "1 TL Salz",
+          "1 Päckchen Trockenhefe"
+        ],
+        "en": [
+          "100 g buckwheat flour",
+          "80 g oat flour",
+          "150 g gluten-free all-purpose flour",
+          "50 g cornstarch",
+          "1 1/2 tbsp olive oil",
+          "250 ml lukewarm water",
+          "200 ml milk",
+          "2 g psyllium husk powder",
+          "1 tsp sugar",
+          "1 tsp salt",
+          "1 packet dry yeast"
+        ]
+      }
+    },
+    {
+      "id": "chap2",
+      "type": "title",
+      "level": 2,
+      "text": {
+        "de": "Zubereitung",
+        "en": "Preparation"
+      }
+    },
+    {
+      "id": "step1",
+      "type": "step",
+      "heading": {
+        "de": "Hefe aktivieren",
+        "en": "Activate Yeast"
+      },
+      "text": {
+        "de": "Trockenhefe, Zucker, Wasser, Milch verrühren und stehen lassen bis sich Bläschen bilden.",
+        "en": "Mix dry yeast, sugar, water, and milk and let it sit until bubbles form."
+      }
+    },
+    {
+      "id": "step2",
+      "type": "step",
+      "heading": {
+        "de": "Teig kneten",
+        "en": "Knead Dough"
+      },
+      "text": {
+        "de": "Flohsamenschalen in etwas Wasser quellen lassen und anschließend die Zutaten vermengen damit ein klebriger Teig entsteht. Ca. 5min kneten - Teig soll klebrig aber nicht flüssig sein!",
+        "en": "Soak the psyllium husk in water and then combine all ingredients into a sticky dough. Knead for about 5 minutes – the dough should be sticky but not fluid!"
+      }
+    },
+    {
+      "id": "step3",
+      "type": "step",
+      "heading": {
+        "de": "Gehen lassen und backen",
+        "en": "Proof and Bake"
+      },
+      "text": {
+        "de": "In Kastenform füllen und für 1h gehen lassen. Bei 200 °C Ober-/Unterhitze für ca. 45min backen und auskühlen lassen. Beim Backen eine Schüssel gefüllt mit Wasser ebenfalls in den Ofen stellen.",
+        "en": "Fill into a loaf pan and let rise for 1 hour. Bake at 200 °C (top/bottom heat) for about 45 minutes and let cool. Place a bowl filled with water in the oven while baking."
+      }
+    }
+  ]
+}

@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neues Rezept hinzufügen / Add New Recipe</title>
+    <style>
+        /* --- Reset & Base Variables (Tailwind Match) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --zinc-950: #09090b;
+            --zinc-900: #18181b;
+            --zinc-800: #27272a; /* Card bg */
+            --zinc-700: #3f3f46; /* Border */
+            --zinc-600: #52525b;
+            --zinc-500: #71717a;
+            --zinc-400: #a1a1aa; /* Muted text */
+            --zinc-300: #d4d4d8; /* Label text */
+            --zinc-50: #fafafa;  /* Main text */
+
+            --orange-500: #f97316;
+            --orange-600: #ea580c;
+            --red-600: #dc2626;
+            --red-700: #b91c1c;
+            --red-500: #ef4444;
+
+            --bg-background: var(--zinc-950);
+            --radius: 0.5rem;
+            --cursor-whisk: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2v20M6 6h12M6 10h12M6 14h12M6 18h12" stroke="black" stroke-width="2" fill="none"/></svg>') 12 12, pointer;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-background);
+            color: var(--zinc-50);
+            margin: 0;
+            padding: 2rem 1rem;
+            line-height: 1.5;
+        }
+
+        /* --- Layout --- */
+        .container {
+            max-width: 56rem; /* 4xl */
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem; /* space-y-8 */
+        }
+
+        .header { margin-bottom: 0.5rem; }
+        .header h1 { font-size: 1.875rem; font-weight: 700; margin: 0 0 0.5rem 0; }
+        .header p { color: var(--zinc-400); margin: 0; }
+
+        /* --- Components --- */
+        .card {
+            background-color: var(--zinc-900);
+            border: 1px solid var(--zinc-800);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .card-header { padding: 1.5rem 1.5rem 0.5rem 1.5rem; }
+        .card-title { font-size: 1.125rem; font-weight: 600; margin: 0; color: white; }
+        
+        .card-content { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .space-y-6 > * + * { margin-top: 1.5rem; }
+
+        /* --- Form Elements --- */
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--zinc-300);
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"], 
+        textarea {
+            width: 100%;
+            background-color: var(--zinc-800);
+            border: 1px solid var(--zinc-700);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            font-family: inherit;
+            font-size: 0.875rem;
+            transition: border-color 0.15s;
+        }
+
+        input:focus, textarea:focus {
+            outline: 2px solid white;
+            outline-offset: -1px;
+            border-color: white;
+        }
+
+        input::placeholder, textarea::placeholder { color: var(--zinc-500); }
+
+        /* --- Buttons --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: var(--cursor-whisk);
+            transition: all 0.2s;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-icon { padding: 0.5rem; }
+        
+        .btn-ghost {
+            background: transparent;
+            color: var(--zinc-400);
+        }
+        .btn-ghost:hover {
+            color: var(--red-500);
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--zinc-700);
+            color: var(--zinc-300);
+            width: 100%;
+        }
+        .btn-outline:hover {
+            background-color: var(--zinc-800);
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--orange-500), var(--red-600));
+            color: white;
+            flex: 1;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(to right, var(--orange-600), var(--red-700));
+        }
+
+        /* --- Specific Areas --- */
+        
+        .lang-group { display: flex; gap: 1rem; margin-top: 0.25rem; }
+        .lang-group > div { flex: 1; }
+
+        /* Lists (Ingredients/Steps) */
+        .list-row { display: flex; gap: 0.5rem; align-items: start; margin-bottom: 0.75rem; }
+        .list-row .ingredient-input-de, .list-row .ingredient-input-en { flex: 1; }
+        
+        .step-item {
+            background-color: var(--zinc-800);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .step-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .step-label { color: var(--zinc-400); font-size: 0.875rem; }
+
+        /* Nutrients Grid */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: white;
+            color: black;
+            text-align: center;
+            border-radius: 6px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            right: 20px;
+            bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: translateY(100%);
+            transition: transform 0.3s ease-in-out, visibility 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-left: 5px solid #10b981; /* Green success strip */
+        }
+        #toast.show {
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Icons Helper */
+        svg { display: block; }
+
+        /* Toolbar */
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .ml-auto { margin-left: auto; }
+
+        /* Language Toggle */
+        .btn-group {
+            display: flex;
+            border-radius: 0.375rem;
+            overflow: hidden;
+            border: 1px solid var(--zinc-700);
+        }
+        .btn-group-item {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            color: var(--zinc-300);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-group-item.active {
+            background-color: var(--orange-500);
+            color: white;
+        }
+        .btn-group-item:hover {
+            background-color: var(--zinc-800);
+        }
+
+        /* Icon styles */
+        .icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 0.5rem;
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Preview Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background-color: var(--zinc-900);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--zinc-400);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Tag Selection */
+        .tag-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .tag-chip {
+            padding: 0.25rem 0.5rem;
+            background-color: var(--zinc-800);
+            border: 1px solid var(--zinc-700);
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tag-chip.selected {
+            background-color: var(--orange-500);
+            color: white;
+        }
+        .tag-chip:hover {
+            background-color: var(--zinc-700);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Toolbar -->
+        <div class="flex items-center justify-between mb-6">
+            <a href="index.html" class="btn btn-outline">
+                <svg class="icon mr-2" viewBox="0 0 24 24"><path d="M19 12H5m7 7-7-7 7-7"/></svg>
+                Zurück zur Rezeptübersicht
+            </a>
+
+            <div class="flex items-center gap-4 ml-auto">
+                <!-- Language Toggle -->
+                <div class="btn-group">
+                    <button class="btn-group-item active" id="lang-de" onclick="setLanguage('de')">DE</button>
+                    <button class="btn-group-item" id="lang-en" onclick="setLanguage('en')">EN</button>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-2">
+                    <button id="btn-preview" class="btn btn-outline">
+                        <svg class="icon mr-2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        Vorschau
+                    </button>
+                    <button id="btn-copy-json" class="btn btn-outline">
+                        <svg class="icon mr-2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        JSON
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1 id="page-title">Neues Rezept hinzufügen</h1>
+            <p id="page-description">Teile dein Lieblingsrezept mit der Community</p>
+        </div>
+
+        <form id="recipeForm" class="space-y-6">
+            
+            <!-- Basic Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Grundinformationen (DE / EN)</h2>
+                </div>
+                <div class="card-content">
+                    <div>
+                        <label>Rezepttitel</label>
+                        <div class="lang-group">
+                            <div><input type="text" id="title-de" placeholder="Deutsch (z.B. Pizza Margherita)" required></div>
+                            <div><input type="text" id="title-en" placeholder="Englisch (e.g., Pizza Margherita)" required></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label>Kurzbeschreibung</label>
+                        <div class="lang-group">
+                            <div><textarea id="description-de" rows="2" placeholder="Deutsch..."></textarea></div>
+                            <div><textarea id="description-en" rows="2" placeholder="English..."></textarea></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="image-url">Hauptbildlink (URL)</label>
+                        <input type="text" id="image-url" placeholder="z.B. https://images.unsplash.com/...">
+                    </div>
+
+                    <div>
+                        <label for="prep-time">Zubereitungszeit (Minuten)</label>
+                        <input type="number" id="prep-time" placeholder="z.B. 30" min="1">
+                    </div>
+
+                    <div>
+                        <label for="tags">Tags (für Index.json)</label>
+                        <div class="tag-selector" id="tag-selector">
+                            <!-- Tags will be injected here -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Ingredients -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Zutaten (DE / EN)</h2>
+                </div>
+                <div class="card-content">
+                    <div id="ingredients-list" class="space-y-3">
+                        <!-- Ingredients will be injected here -->
+                    </div>
+                    
+                    <button type="button" class="btn btn-outline" onclick="addIngredient()">
+                        <!-- Plus Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Zutat hinzufügen
+                    </button>
+                </div>
+            </div>
+
+            <!-- Steps -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Zubereitungsschritte (DE / EN)</h2>
+                </div>
+                <div class="card-content">
+                    <div id="steps-list" class="space-y-4">
+                        <!-- Steps will be injected here -->
+                    </div>
+
+                    <button type="button" class="btn btn-outline" onclick="addStep()">
+                        <!-- Plus Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Schritt hinzufügen
+                    </button>
+                </div>
+            </div>
+
+            <!-- Nutrition -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Nährwerte (pro Portion)</h2>
+                </div>
+                <div class="card-content">
+                    <div class="grid-3" id="nutrition-grid">
+                        <!-- Generated via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">Rezept veröffentlichen</button>
+                <button type="button" id="btn-save-draft" class="btn btn-outline" style="flex: 0 0 auto; width: auto;">Als Entwurf speichern</button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- JSON Output Area and Download Link -->
+    <div id="json-output-container" class="container" style="display:none; margin-top: 2rem;">
+        <h2 class="card-title" style="color: var(--zinc-50); margin-bottom: 1rem;">Generierte Rezept-JSON</h2>
+        <a id="download-link" class="btn btn-outline" download="recipe.json" style="width: 100%; max-width: 56rem; text-align: center; color: var(--zinc-300); border-color: var(--zinc-700); margin-bottom: 1rem;">JSON herunterladen</a>
+        <textarea id="json-output" rows="15" readonly style="width: 100%; background-color: var(--zinc-900); color: var(--zinc-50); border: 1px solid var(--zinc-700); padding: 1rem; border-radius: 0.5rem; font-family: monospace;"></textarea>
+    </div>
+
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePreview()">&times;</button>
+            <h2 id="preview-title">Rezeptvorschau</h2>
+            <div id="preview-content"></div>
+        </div>
+    </div>
+
+    <!-- Toast Component -->
+    <div id="toast">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Rezept erfolgreich hinzugefügt!
+    </div>
+
+    <script>
+        // --- State Management ---
+        const nutrientsData = ['Kalorien', 'Fett', 'Protein', 'Kohlenhydrate', 'Zucker', 'Salz'];
+        let availableTags = [];
+        let selectedTags = [];
+        let currentLanguage = 'de';
+
+        // --- Load Tags ---
+        async function loadTags() {
+            try {
+                const response = await fetch('tags.json');
+                const data = await response.json();
+                availableTags = data.tags || [];
+                renderTags();
+            } catch (error) {
+                console.error('Error loading tags:', error);
+            }
+        }
+        
+        // --- Utility Functions ---
+        function generateHexId() {
+            // Generates a 4-character random hex string (e.g., A5B3)
+            return Math.floor(Math.random() * 0x10000).toString(16).toUpperCase().padStart(4, '0');
+        }
+
+        function slugify(text) {
+            if (!text) return '';
+            return text.toLowerCase()
+                .trim()
+                .replace(/ä/g, 'ae')
+                .replace(/ö/g, 'oe')
+                .replace(/ü/g, 'ue')
+                .replace(/ß/g, 'ss')
+                .replace(/[^\w\s-]/g, '') 
+                .replace(/[\s_-]+/g, '-') 
+                .replace(/^-+|-+$/g, ''); 
+        }
+        
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add initial empty fields
+            addIngredient();
+            addStep();
+            renderNutrients();
+            loadTags();
+            loadDraft();
+        });
+
+        // --- Logic: Ingredients ---
+        function addIngredient(valueDe = '', valueEn = '') {
+            const container = document.getElementById('ingredients-list');
+            const row = document.createElement('div');
+            row.className = 'list-row';
+            row.innerHTML = `
+                <input type="text" class="ingredient-input-de" placeholder="Zutat (Deutsch)" value="${valueDe}">
+                <input type="text" class="ingredient-input-en" placeholder="Ingredient (English)" value="${valueEn}">
+                <button type="button" class="btn btn-icon btn-ghost" onclick="removeRow(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            `;
+            container.appendChild(row);
+        }
+
+        // --- Logic: Steps ---
+        function addStep(headingDe = '', headingEn = '', textDe = '', textEn = '', imageUrl = '') {
+            const container = document.getElementById('steps-list');
+            const index = container.children.length + 1;
+            
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'step-item';
+            stepDiv.innerHTML = `
+                <div class="step-header">
+                    <span class="step-label">Schritt <span class="step-number">${index}</span></span>
+                    <button type="button" class="btn btn-icon btn-ghost" onclick="removeStepRow(this)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label style="margin-top: 0.5rem; color: var(--zinc-400); font-size: 0.75rem;">Überschrift (DE / EN)</label>
+                    <div class="lang-group" style="gap: 0.5rem;">
+                        <div><input type="text" class="step-heading-de" placeholder="Deutsch" value="${headingDe}" style="background-color: var(--zinc-900);"></div>
+                        <div><input type="text" class="step-heading-en" placeholder="English" value="${headingEn}" style="background-color: var(--zinc-900);"></div>
+                    </div>
+                    
+                    <label style="color: var(--zinc-400); font-size: 0.75rem;">Beschreibung (DE / EN)</label>
+                    <div class="lang-group" style="gap: 0.5rem;">
+                        <div><textarea class="step-text-de" rows="3" placeholder="Deutsch..." style="background-color: var(--zinc-900);">${textDe}</textarea></div>
+                        <div><textarea class="step-text-en" rows="3" placeholder="English..." style="background-color: var(--zinc-900);">${textEn}</textarea></div>
+                    </div>
+
+                    <label style="color: var(--zinc-400); font-size: 0.75rem;">Optionales Bild (URL)</label>
+                    <input type="text" class="step-image-url" placeholder="Bildlink für diesen Schritt" value="${imageUrl}" style="background-color: var(--zinc-900);">
+                </div>
+            `;
+            container.appendChild(stepDiv);
+            updateStepNumbers();
+        }
+
+        // --- Logic: Remove Helpers ---
+        function removeRow(button) {
+            button.closest('.list-row').remove();
+        }
+
+        function removeStepRow(button) {
+            button.closest('.step-item').remove();
+            updateStepNumbers();
+        }
+
+        function updateStepNumbers() {
+            const steps = document.querySelectorAll('.step-number');
+            steps.forEach((span, index) => {
+                span.textContent = index + 1;
+            });
+        }
+
+        // --- Logic: Nutrients ---
+        function renderNutrients() {
+            const grid = document.getElementById('nutrition-grid');
+            grid.innerHTML = '';
+            nutrientsData.forEach(key => {
+                const div = document.createElement('div');
+                const placeholder = key === 'Kalorien' ? '450' : '20g';
+                div.innerHTML = `
+                    <label for="${key}">${key}</label>
+                    <input type="text" id="${key}" placeholder="${placeholder}" class="nutrient-input">
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        // --- Logic: Tags ---
+        function renderTags() {
+            const selector = document.getElementById('tag-selector');
+            selector.innerHTML = '';
+            availableTags.forEach(tag => {
+                const chip = document.createElement('div');
+                chip.className = 'tag-chip';
+                if (selectedTags.some(selected => selected.id === tag.id)) {
+                    chip.classList.add('selected');
+                }
+                chip.textContent = tag.de;
+                chip.onclick = () => toggleTag(tag);
+                selector.appendChild(chip);
+            });
+        }
+
+        function toggleTag(tag) {
+            const index = selectedTags.findIndex(selected => selected.id === tag.id);
+            if (index > -1) {
+                selectedTags.splice(index, 1);
+            } else {
+                selectedTags.push(tag);
+            }
+            renderTags();
+        }
+
+        // --- Logic: Form Handling ---
+        document.getElementById('recipeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 1. Collect Data
+            const titleDe = document.getElementById('title-de').value.trim();
+            const titleEn = document.getElementById('title-en').value.trim();
+            const descriptionDe = document.getElementById('description-de').value.trim();
+            const descriptionEn = document.getElementById('description-en').value.trim();
+            const imageUrl = document.getElementById('image-url').value.trim();
+            const prepTime = parseInt(document.getElementById('prep-time').value.trim()) || 0;
+            // Check for required titles
+            if (!titleDe || !titleEn) {
+                console.error("Rezepttitel (Deutsch und Englisch) wird benötigt!");
+                showToast("Fehler: Rezepttitel (DE/EN) fehlt!", true);
+                return;
+            }
+
+            // Ingredients
+            const ingredientRows = Array.from(document.querySelectorAll('.list-row'));
+            const ingredientsDe = ingredientRows
+                .map(row => row.querySelector('.ingredient-input-de').value.trim())
+                .filter(item => item.length > 0);
+            const ingredientsEn = ingredientRows
+                .map(row => row.querySelector('.ingredient-input-en').value.trim())
+                .filter(item => item.length > 0);
+
+            // Steps
+            const stepItems = Array.from(document.querySelectorAll('.step-item'));
+            const steps = stepItems
+                .map(item => ({
+                    headingDe: item.querySelector('.step-heading-de').value.trim(),
+                    headingEn: item.querySelector('.step-heading-en').value.trim(),
+                    textDe: item.querySelector('.step-text-de').value.trim(),
+                    textEn: item.querySelector('.step-text-en').value.trim(),
+                    imageUrl: item.querySelector('.step-image-url').value.trim()
+                }))
+                .filter(step => step.textDe.length > 0 || step.textEn.length > 0);
+
+
+            const nutrients = {};
+            document.querySelectorAll('.nutrient-input').forEach(input => {
+                nutrients[input.id] = input.value.trim();
+            });
+
+            // 2. Generate Metadata
+            const hexId = generateHexId();
+            const slug = slugify(titleEn); // Use English title for the slug
+            const tags = selectedTags.map(tag => tag.id);
+            const timestamp = new Date().toISOString().slice(0, 19) + '.000Z'; 
+
+            // 3. Construct Components
+            const components = [];
+
+            // Helper to get next component ID
+            let componentIndex = 0;
+            const getNextComponentId = () => `c${(componentIndex++).toString().padStart(3, '0')}`;
+            
+            // Add Ingredients as a component block
+            if (ingredientsDe.length > 0 || ingredientsEn.length > 0) {
+                components.push({
+                    id: getNextComponentId(),
+                    type: "title",
+                    level: 2,
+                    text: { de: "Zutaten", en: "Ingredients" }
+                });
+
+                components.push({
+                    id: getNextComponentId(),
+                    type: "ingredients",
+                    items: { de: ingredientsDe, en: ingredientsEn.length > 0 ? ingredientsEn : ingredientsDe } 
+                });
+            }
+
+            // Add Steps as components
+            if (steps.length > 0) {
+                components.push({
+                    id: getNextComponentId(),
+                    type: "title",
+                    level: 2,
+                    text: { de: "Zubereitung", en: "Preparation" }
+                });
+
+                steps.forEach((step, index) => {
+                    const stepComponent = {
+                        id: getNextComponentId(),
+                        type: "step",
+                        heading: { 
+                            de: step.headingDe, 
+                            en: step.headingEn.length > 0 ? step.headingEn : step.headingDe 
+                        },
+                        text: { 
+                            de: step.textDe, 
+                            en: step.textEn.length > 0 ? step.textEn : step.textDe 
+                        }
+                    };
+                    
+                    // Add optional image URL
+                    if (step.imageUrl.length > 0) {
+                         stepComponent.image = step.imageUrl;
+                    }
+
+                    components.push(stepComponent);
+                });
+            }
+            
+            // 4. Final JSON Structure (Index.json format for quick lookup)
+            const recipeDataIndex = {
+                id: hexId,
+                slug: slug,
+                metadata: {
+                    title: { de: titleDe, en: titleEn },
+                    description: { de: descriptionDe, en: descriptionEn },
+                    timestamp: timestamp,
+                    image: imageUrl,
+                    time: prepTime,
+                    tags: tags
+                }
+            };
+
+            // 5. Final JSON Structure (Recipe content format)
+            const recipeDataContent = {
+                id: hexId,
+                slug: slug,
+                metadata: {
+                    title: titleDe,
+                    description: descriptionDe,
+                    language: "de",
+                    timestamp: timestamp,
+                    image: imageUrl, // Added image field to content JSON as requested
+                },
+                components: components
+            };
+            
+            const jsonStringIndex = JSON.stringify(recipeDataIndex, null, 2);
+            const jsonStringContent = JSON.stringify(recipeDataContent, null, 2);
+
+            // 6. Display JSON and Download Link
+            const outputContainer = document.getElementById('json-output-container');
+            const textarea = document.getElementById('json-output');
+            const downloadLink = document.getElementById('download-link');
+
+            textarea.value = jsonStringIndex;
+            outputContainer.style.display = 'flex';
+            outputContainer.scrollIntoView({ behavior: 'smooth' });
+
+            // Create Blob for download (full content JSON)
+            const blob = new Blob([jsonStringContent], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            downloadLink.href = url;
+            downloadLink.download = `${hexId}.json`;
+            downloadLink.textContent = `JSON herunterladen (${hexId}.json)`;
+
+            // 7. Show Toast and Reset
+            showToast(`Rezept erfolgreich als ${hexId}.json generiert!`, false);
+
+            // Reset form fields
+            this.reset();
+
+            // Reset Dynamic Lists
+            document.getElementById('ingredients-list').innerHTML = '';
+            document.getElementById('steps-list').innerHTML = '';
+            addIngredient();
+            addStep();
+            renderNutrients(); // Re-render nutrients grid after reset if necessary (not necessary here, but good practice if inputs were cleared)
+
+            // Reset selected tags
+            selectedTags = [];
+            renderTags();
+        });
+
+        function showToast(message, isError) {
+            const toast = document.getElementById('toast');
+            const icon = toast.querySelector('svg');
+
+            toast.textContent = message;
+            toast.style.backgroundColor = isError ? '#fee2e2' : 'white';
+            toast.style.color = isError ? '#991b1b' : 'black';
+            toast.style.borderLeftColor = isError ? '#ef4444' : '#10b981';
+
+            if (isError) {
+                 // X icon for error
+                 icon.setAttribute('stroke', '#ef4444');
+                 icon.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
+            } else {
+                 // Checkmark icon for success
+                 icon.setAttribute('stroke', '#10b981');
+                 icon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
+            }
+            toast.prepend(icon);
+
+            toast.className = 'show';
+            setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 5000);
+        }
+
+        // --- Language Toggle ---
+        function setLanguage(lang) {
+            // Update button states
+            document.getElementById('lang-de').classList.toggle('active', lang === 'de');
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+
+            // Update page content
+            const title = document.getElementById('page-title');
+            const description = document.getElementById('page-description');
+
+            if (lang === 'de') {
+                title.textContent = 'Neues Rezept hinzufügen';
+                description.textContent = 'Teile dein Lieblingsrezept mit der Community';
+            } else {
+                title.textContent = 'Add New Recipe';
+                description.textContent = 'Share your favorite recipe with the community';
+            }
+        }
+
+        // --- Preview Modal ---
+        function showPreview() {
+            const modal = document.getElementById('preview-modal');
+            const content = document.getElementById('preview-content');
+
+            // Collect form data
+            const titleDe = document.getElementById('title-de').value.trim();
+            const titleEn = document.getElementById('title-en').value.trim();
+            const descriptionDe = document.getElementById('description-de').value.trim();
+            const descriptionEn = document.getElementById('description-en').value.trim();
+            const imageUrl = document.getElementById('image-url').value.trim();
+
+            // Generate preview HTML
+            let previewHTML = '<div style="max-width: 600px; margin: 0 auto;">';
+
+            if (imageUrl) {
+                previewHTML += `<img src="${imageUrl}" alt="Recipe Image" style="width: 100%; height: 300px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1rem;">`;
+            }
+
+            previewHTML += `<h1>${titleDe || titleEn}</h1>`;
+            if (descriptionDe || descriptionEn) {
+                previewHTML += `<p style="color: var(--zinc-400); margin-bottom: 1rem;">${descriptionDe || descriptionEn}</p>`;
+            }
+
+            // Ingredients
+            const ingredientRows = Array.from(document.querySelectorAll('.list-row'));
+            if (ingredientRows.length > 0) {
+                previewHTML += '<h2>Zutaten / Ingredients</h2><ul>';
+                ingredientRows.forEach(row => {
+                    const de = row.querySelector('.ingredient-input-de').value.trim();
+                    const en = row.querySelector('.ingredient-input-en').value.trim();
+                    if (de || en) {
+                        previewHTML += `<li>${de || en}</li>`;
+                    }
+                });
+                previewHTML += '</ul>';
+            }
+
+            // Steps
+            const stepItems = Array.from(document.querySelectorAll('.step-item'));
+            if (stepItems.length > 0) {
+                previewHTML += '<h2>Zubereitung / Preparation</h2>';
+                stepItems.forEach((item, index) => {
+                    const headingDe = item.querySelector('.step-heading-de').value.trim();
+                    const headingEn = item.querySelector('.step-heading-en').value.trim();
+                    const textDe = item.querySelector('.step-text-de').value.trim();
+                    const textEn = item.querySelector('.step-text-en').value.trim();
+                    const imageUrl = item.querySelector('.step-image-url').value.trim();
+
+                    previewHTML += `<h3>Schritt ${index + 1} / Step ${index + 1}</h3>`;
+                    if (headingDe || headingEn) {
+                        previewHTML += `<h4>${headingDe || headingEn}</h4>`;
+                    }
+                    if (textDe || textEn) {
+                        previewHTML += `<p>${textDe || textEn}</p>`;
+                    }
+                    if (imageUrl) {
+                        previewHTML += `<img src="${imageUrl}" alt="Step Image" style="width: 100%; max-width: 400px; border-radius: 0.5rem; margin: 1rem 0;">`;
+                    }
+                });
+            }
+
+            previewHTML += '</div>';
+            content.innerHTML = previewHTML;
+            modal.classList.add('show');
+        }
+
+        function closePreview() {
+            document.getElementById('preview-modal').classList.remove('show');
+        }
+
+        // --- Copy JSON ---
+        function copyJsonToClipboard() {
+            const textarea = document.getElementById('json-output');
+            if (textarea.value) {
+                navigator.clipboard.writeText(textarea.value).then(() => {
+                    showToast('JSON in Zwischenablage kopiert!', false);
+                }).catch(() => {
+                    showToast('Fehler beim Kopieren!', true);
+                });
+            } else {
+                showToast('Kein JSON zum Kopieren vorhanden!', true);
+            }
+        }
+
+        // --- Save Draft ---
+        function saveDraft() {
+            const formData = new FormData(document.getElementById('recipeForm'));
+            const draft = {};
+
+            for (let [key, value] of formData.entries()) {
+                draft[key] = value;
+            }
+
+            // Add dynamic fields
+            draft.ingredients = Array.from(document.querySelectorAll('.list-row')).map(row => ({
+                de: row.querySelector('.ingredient-input-de').value,
+                en: row.querySelector('.ingredient-input-en').value
+            }));
+
+            draft.steps = Array.from(document.querySelectorAll('.step-item')).map(item => ({
+                headingDe: item.querySelector('.step-heading-de').value,
+                headingEn: item.querySelector('.step-heading-en').value,
+                textDe: item.querySelector('.step-text-de').value,
+                textEn: item.querySelector('.step-text-en').value,
+                imageUrl: item.querySelector('.step-image-url').value
+            }));
+
+            draft.nutrients = {};
+            document.querySelectorAll('.nutrient-input').forEach(input => {
+                draft.nutrients[input.id] = input.value;
+            });
+
+            localStorage.setItem('recipeDraft', JSON.stringify(draft));
+            showToast('Entwurf gespeichert!', false);
+        }
+
+        // --- Load Draft ---
+        function loadDraft() {
+            const draft = localStorage.getItem('recipeDraft');
+            if (draft) {
+                const data = JSON.parse(draft);
+
+                // Load basic fields
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) element.value = data[key];
+                });
+
+                // Load ingredients
+                if (data.ingredients) {
+                    document.getElementById('ingredients-list').innerHTML = '';
+                    data.ingredients.forEach(ing => addIngredient(ing.de, ing.en));
+                }
+
+                // Load steps
+                if (data.steps) {
+                    document.getElementById('steps-list').innerHTML = '';
+                    data.steps.forEach(step => addStep(step.headingDe, step.headingEn, step.textDe, step.textEn, step.imageUrl));
+                }
+
+                // Load nutrients
+                if (data.nutrients) {
+                    Object.keys(data.nutrients).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element) element.value = data.nutrients[key];
+                    });
+                }
+
+                showToast('Entwurf geladen!', false);
+            }
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('btn-preview').addEventListener('click', showPreview);
+        document.getElementById('btn-copy-json').addEventListener('click', copyJsonToClipboard);
+        document.getElementById('btn-save-draft').addEventListener('click', saveDraft);
+
+    </script>
+</body>
+</html>

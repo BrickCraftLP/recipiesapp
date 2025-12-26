@@ -1,0 +1,79 @@
+[
+  {
+    "id": "1GFB",
+    "slug": "gluten-free-bread",
+    "metadata": {
+      "title": {
+        "de": "Glutenfreies Brot",
+        "en": "Gluten-Free Bread"
+      },
+      "description": {
+        "de": "Ein weiches und leckeres glutenfreies Brotrezept.",
+        "en": "A soft and delicious gluten-free bread recipe."
+      },
+      "timestamp": "2025-12-03T13:39:45.000Z",
+      "image": "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=800&q=80",
+      "tags": ["BREA", "BRKF", "GLFR"],
+      "time": 120
+    }
+  },
+  {
+  "id": "5974",
+  "slug": "cinnamon-rolls",
+  "metadata": {
+    "title": {
+      "de": "Zimtschnecken",
+      "en": "Cinnamon Rolls"
+    },
+    "description": {
+      "de": "",
+      "en": ""
+    },
+    "timestamp": "2025-12-09T14:58:18.000Z",
+    "image": "https://images.unsplash.com/photo-1609126979532-0f514232d1a8?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "time": 240,
+    "tags": ["BRKF", "DESS", "CAKE", "MOR2"]
+  }
+},
+{
+  "id": "DAFD",
+  "slug": "glutenfree-bundt-cake",
+  "metadata": {
+    "title": {
+      "de": "Glutenfreier Gugelhupf 🍰",
+      "en": "Glutenfree Bundt Cake 🍰"
+    },
+    "description": {
+      "de": "",
+      "en": ""
+    },
+    "timestamp": "2025-12-04T15:31:56.000Z",
+    "image": "https://images.unsplash.com/photo-1668617111358-20877d1b08fd?q=80&w=689&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "time": 40,
+    "tags": [
+      "LES1", "GLFR"
+    ]
+  }
+},
+{
+  "id": "D93E",
+  "slug": "energy-balls",
+  "metadata": {
+    "title": {
+      "de": "Energy Balls ⚡️",
+      "en": "Energy Balls ⚡️"
+    },
+    "description": {
+      "de": "Sie sind perfekt für einen Snack zwischendurch - bewahrt sie in einer geschlossenen Box auf!! 💛🥥\n\nDa sie sehr intensiv sind, würde ich empfehlen nur 1-3 Kugeln zu essen!!",
+      "en": "They are perfect as a quick snack, just keep them in a closed box and enjoy whenever you like 💛\n\nThey are really intensive so I would recommend eating just 1-3 balls!"
+    },
+    "timestamp": "2025-11-30T15:41:08.000Z",
+    "image": "https://images.unsplash.com/photo-1678554500191-3885a6fbf8c2?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "time": 5,
+    "tags": [
+      "0-10",
+      "GLFR", "SNCK"
+    ]
+  }
+}
+]

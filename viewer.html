@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezept Viewer</title>
+    <style>
+        /* --- CSS VARIABLES & RESET (Mimicking Tailwind/Zinc Theme) --- */
+        :root {
+            --bg-page: #09090b;       /* zinc-950 */
+            --bg-card: #18181b;       /* zinc-900 */
+            --bg-input: #27272a;      /* zinc-800 */
+            --border-color: #27272a;  /* zinc-800 */
+            --text-main: #ffffff;
+            --text-muted: #d4d4d8;    /* zinc-300 */
+            --text-faint: #a1a1aa;    /* zinc-400 */
+            --primary: #f97316;       /* orange-500 */
+            --primary-end: #dc2626;   /* red-600 */
+            
+            --radius: 0.5rem;
+            --font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            line-height: 1.5;
+            padding-bottom: 4rem;
+        }
+
+        /* --- UTILITY CLASSES --- */
+        .container { max-width: 56rem; margin: 0 auto; padding: 2rem; } /* max-w-4xl */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .w-full { width: 100%; }
+        
+        /* Grid System */
+        .grid { display: grid; gap: 2rem; }
+        @media (min-width: 768px) {
+            .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .col-span-1 { grid-column: span 1 / span 1; }
+            .col-span-2 { grid-column: span 2 / span 2; }
+        }
+
+        /* --- COMPONENTS --- */
+        
+        /* Cards */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .card-header { padding: 1.5rem 1.5rem 0 1.5rem; margin-bottom: 1.5rem; }
+        .card-title { font-size: 1.25rem; font-weight: 600; margin: 0; line-height: 1; display: flex; align-items: center; gap: 0.5rem; }
+        .card-content { padding: 0 1.5rem 1.5rem 1.5rem; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            text-decoration: none;
+            background: transparent;
+            color: var(--text-muted);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--primary-end));
+            color: white;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+        
+        .btn-outline {
+            border-color: var(--border-color);
+            color: var(--text-muted);
+        }
+        .btn-outline:hover { background-color: var(--bg-input); color: white; }
+
+        .btn-ghost {
+            color: var(--text-faint);
+            padding-left: 0;
+        }
+        .btn-ghost:hover { color: white; }
+
+        /* Button Group (Language Toggle) */
+        .btn-group {
+            display: flex;
+            background-color: var(--bg-input);
+            padding: 0.25rem;
+            border-radius: var(--radius);
+            gap: 0.25rem;
+        }
+        .btn-group-item {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem; /* slightly smaller radius */
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-faint);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
+        }
+        .btn-group-item.active {
+            background-color: var(--bg-card); /* or lighter zinc */
+            color: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .btn-group-item:hover:not(.active) {
+            color: white;
+        }
+
+        /* Inputs (Not used anymore, but kept for visual consistency if needed) */
+        textarea {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            resize: vertical;
+        }
+        textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+
+        /* Separator / Divider */
+        .separator-container { position: relative; margin: 1.5rem 0; }
+        .separator-line { position: absolute; inset: 0; display: flex; align-items: center; }
+        .separator-line span { width: 100%; border-top: 1px solid #3f3f46; } /* zinc-700 */
+        .separator-text { position: relative; display: flex; justify-content: center; text-transform: uppercase; font-size: 0.75rem; }
+        .separator-text span { background-color: var(--bg-card); padding: 0 0.5rem; color: #71717a; }
+
+        /* Recipe Header Specifics */
+        .recipe-header {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 2rem;
+        }
+        .badge {
+            display: inline-block;
+            background-color: #ffffff; 
+            color: #000;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            margin-bottom: 0.75rem;
+        }
+        h1 { font-size: 2rem; font-weight: 700; margin: 0 0 0.5rem 0; }
+        
+        /* Ingredients List */
+        .ingredient-list { list-style: none; padding: 0; margin: 0; }
+        .ingredient-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 0.75rem; 
+            padding: 0.25rem 0; 
+            color: var(--text-muted); 
+            cursor: pointer; 
+            transition: color 0.2s;
+        }
+        .ingredient-item:hover { color: white; }
+        .ingredient-item label { 
+            flex-grow: 1; 
+            cursor: pointer; 
+            user-select: none;
+        }
+
+        /* Checked Ingredient Style */
+        .ingredient-item.checked label {
+            text-decoration: line-through;
+            color: var(--text-faint);
+            transition: color 0.2s, text-decoration 0.2s;
+        }
+        .ingredient-item input[type="checkbox"] {
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid var(--text-faint);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            position: relative;
+            transition: border-color 0.2s, background-color 0.2s;
+            flex-shrink: 0;
+        }
+        .ingredient-item input[type="checkbox"]:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        .ingredient-item input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 0.8rem;
+            line-height: 1;
+        }
+
+
+        /* Steps */
+        .step-item { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+        .step-number {
+            flex-shrink: 0;
+            width: 2.5rem; height: 2.5rem;
+            background-color: #ffffff; /* Primary inverse */
+            color: #000;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+        }
+        .step-content h3 { margin: 0 0 0.5rem 0; color: white; font-size: 1.1rem; }
+        .step-content p { margin: 0; color: var(--text-faint); }
+        .step-separator { height: 1px; background-color: var(--border-color); margin-top: 1.5rem; width: 100%; }
+
+        /* Nutrients Grid */
+        .nutrient-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .nutrient-box { background-color: var(--bg-input); padding: 0.75rem; border-radius: var(--radius); }
+        .nutrient-label { font-size: 0.75rem; color: var(--text-faint); }
+        .nutrient-value { font-size: 1rem; color: white; margin-top: 0.25rem; }
+
+        /* Toasts */
+        #toast-container { position: fixed; bottom: 1rem; right: 1rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 50; }
+        .toast {
+            background: white; color: black; padding: 1rem; border-radius: var(--radius);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            font-size: 0.875rem; animation: slideIn 0.3s ease;
+        }
+        .toast.error { background: #fee2e2; color: #991b1b; }
+        @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            60% { transform: translateY(-15px); }
+        }
+        
+        /* Icons */
+        .icon { width: 1rem; height: 1rem; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+        .mr-2 { margin-right: 0.5rem; }
+
+        /* Error View Specific */
+        #error-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 100;
+        }
+        #error-view h2 {
+            color: white;
+            font-size: 10rem;
+            margin: 0 0 1rem 0;
+            font-weight: 700;
+            text-shadow: 0 0 5px white, 0 0 10px white, 0 0 15px white;
+            animation: bounce 2s infinite;
+        }
+        #error-view p {
+            color: white;
+            font-size: 1.2rem;
+            margin: 0.5rem 0;
+            opacity: 0.8;
+        }
+        
+        /* New Button Style */
+        .error-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            margin-top: 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: black;
+            background: white;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        .error-btn:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <div class="container">
+        <!-- VIEW: Error / Loading State -->
+        <div id="status-view">
+            <!-- Initial content will be set by JS (Loading or Error) -->
+        </div>
+
+        <!-- VIEW: Recipe Detail -->
+        <div id="recipe-view" class="hidden">
+            
+            <!-- Toolbar -->
+            <div class="flex items-center justify-between mb-6">
+                <a href="index.html" class="btn btn-outline" id="back-btn">
+                    <svg class="icon mr-2" viewBox="0 0 24 24"><path d="M19 12H5m7 7-7-7 7-7"/></svg>
+                    Zurück zur Rezeptübersicht
+                </a>
+                
+                <div class="flex items-center gap-4 ml-auto">
+                    <!-- Language Toggle -->
+                    <div class="btn-group">
+                        <button class="btn-group-item active" id="lang-de" onclick="setLanguage('de')">DE</button>
+                        <button class="btn-group-item" id="lang-en" onclick="setLanguage('en')">EN</button>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-2">
+                        <button id="btn-copy-text" class="btn btn-outline">
+                            <svg class="icon mr-2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            Text
+                        </button>
+                        <button id="btn-copy-json" class="btn btn-outline">
+                            <svg class="icon mr-2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                            JSON
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header -->
+            <div id="recipe-header" class="recipe-header mb-8">
+                <!-- Injected via JS -->
+            </div>
+
+            <div class="grid grid-cols-3">
+                
+                <!-- Left Column -->
+                <div class="col-span-1" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    
+                    <!-- Ingredients -->
+                    <div class="card" id="ingredients-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+                                Zutaten
+                            </h2>
+                        </div>
+                        <div class="card-content">
+                            <ul id="ingredients-list" class="ingredient-list"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Nutrients -->
+                    <div class="card" id="nutrients-card">
+                        <div class="card-header">
+                            <h2 class="card-title" id="nutrients-title">Nährwerte</h2>
+                        </div>
+                        <div class="card-content">
+                            <div id="nutrients-grid" class="nutrient-grid"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column (Steps) -->
+                <div class="col-span-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Zubereitung</h2>
+                        </div>
+                        <div class="card-content" id="steps-container">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- STATE & UTILS ---
+        let currentRecipe = null;
+        let currentLanguage = localStorage.getItem('selectedLanguage') || getCookie('selectedLanguage') || sessionStorage.getItem('selectedLanguage') || 'de'; // Load from localStorage, then cookies, then sessionStorage, or default to 'de'
+
+        // DOM element references
+        const dom = {
+            statusView: document.getElementById('status-view'),
+            recipeView: document.getElementById('recipe-view'),
+            toastContainer: document.getElementById('toast-container'),
+            header: document.getElementById('recipe-header'),
+            ingList: document.getElementById('ingredients-list'),
+            nutrientsGrid: document.getElementById('nutrients-grid'),
+            nutrientsTitle: document.getElementById('nutrients-title'),
+            nutrientsCard: document.getElementById('nutrients-card'),
+            ingCard: document.getElementById('ingredients-card'),
+            stepsContainer: document.getElementById('steps-container'),
+            btnDe: document.getElementById('lang-de'),
+            btnEn: document.getElementById('lang-en'),
+            backBtn: document.getElementById('back-btn')
+        };
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type === 'error' ? 'error' : ''}`;
+            toast.textContent = message;
+            dom.toastContainer.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // --- INGREDIENT CHECK-OFF LOGIC (using localStorage) ---
+
+        /**
+         * Generates a storage key for ingredient status based on recipe ID and index.
+         * @param {number} index - Index of the ingredient.
+         * @returns {string} The localStorage key.
+         */
+        function getIngredientStorageKey(index) {
+            if (!currentRecipe || !currentRecipe.id) return `recipe_temp_ing_${index}_checked`;
+            return `recipe_${currentRecipe.id}_ing_${index}_checked`;
+        }
+
+        /**
+         * Toggles the checked status of an ingredient and updates localStorage.
+         * @param {HTMLElement} listItem - The <li> element of the ingredient.
+         * @param {number} index - Index of the ingredient.
+         * @param {boolean} isChecked - The new checked state.
+         */
+        function toggleIngredient(listItem, index, isChecked) {
+            const storageKey = getIngredientStorageKey(index);
+            
+            if (isChecked) {
+                listItem.classList.add('checked');
+                localStorage.setItem(storageKey, 'true');
+            } else {
+                listItem.classList.remove('checked');
+                localStorage.removeItem(storageKey);
+            }
+        }
+
+        // --- ERROR VIEW ---
+
+        /**
+         * Displays a formatted, bilingual error view.
+         * @param {string | null} id - The recipe ID or null if missing from URL.
+         */
+        function showError(id) {
+            const errorTitleDe = "Fehlercode 404: Rezept nicht gefunden";
+            const errorTitleEn = "Error Code 404: Recipe Not Found";
+            const errorBodyDe = id 
+                ? `Das Rezept mit der ID <b>${id}</b> konnte nicht im Ordner <code>recipes/</code> gefunden werden.`
+                : `Es wurde keine ID in der URL gefunden.`;
+            const errorBodyEn = id
+                ? `The recipe with ID <b>${id}</b> could not be loaded from the <code>recipes/</code> folder.`
+                : `No ID was found in the URL.`;
+
+            dom.statusView.innerHTML = `
+                <div id="error-view">
+                    <h2>404</h2>
+                    <p>${errorBodyDe}</p>
+                    <p>${errorBodyEn}</p>
+                    <a href="index.html" class="error-btn"><svg class="icon mr-2" viewBox="0 0 24 24"><path d="M19 12H5m7 7-7-7 7-7"/></svg>${currentLanguage === 'de' ? 'Zurück zur Rezeptübersicht' : 'Back to Recipe Overview'}</a>
+                </div>
+            `;
+            dom.statusView.classList.remove('hidden');
+            dom.recipeView.classList.add('hidden');
+        }
+        
+        // --- LOAD LOGIC ---
+
+        /**
+         * Attempts to fetch the recipe JSON using the ID from the 'recipes/' folder.
+         * @param {string} id - The recipe ID from the URL.
+         */
+        async function fetchRecipeFromId(id) {
+            // Show loading state
+            dom.statusView.innerHTML = `<div style="text-align:center; padding: 4rem; color: var(--text-muted);">
+                ${currentLanguage === 'de' ? `Rezept mit ID **${id}** wird geladen...` : `Loading recipe with ID **${id}**...`}
+            </div>`;
+            dom.statusView.classList.remove('hidden');
+            dom.recipeView.classList.add('hidden');
+            
+            const filePath = `recipes/${id}.json`;
+            
+            try {
+                const response = await fetch(filePath);
+                
+                if (!response.ok) {
+                    throw new Error(); 
+                }
+                
+                const data = await response.json();
+                loadRecipe(data); 
+            } catch (error) {
+                // Show generic 404 error
+                showError(id); 
+            }
+        }
+
+
+        function loadRecipe(data) {
+            try {
+                if (!data || !data.metadata || !data.metadata.title) throw new Error("Ungültige Datenstruktur");
+                currentRecipe = data;
+                renderRecipe();
+                updateLanguageUI();
+
+                dom.statusView.classList.add('hidden');
+                dom.recipeView.classList.remove('hidden');
+                showToast(currentLanguage === 'de' ? 'Rezept erfolgreich geladen!' : 'Recipe loaded successfully!');
+            } catch (e) {
+                // Show error if recipe structure is invalid after fetch
+                console.error("Ladefehler:", e);
+                showError(currentRecipe ? currentRecipe.id : null);
+            }
+        }
+
+        // --- LANGUAGE HELPERS (Language switching) ---
+
+        window.setLanguage = function(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('selectedLanguage', lang); // Save language preference to localStorage
+            updateLanguageUI();
+            renderRecipe();
+        }
+
+        function updateLanguageUI() {
+            if (dom.btnDe && dom.btnEn) {
+                if (currentLanguage === 'de') {
+                    dom.btnDe.classList.add('active');
+                    dom.btnEn.classList.remove('active');
+                } else {
+                    dom.btnDe.classList.remove('active');
+                    dom.btnEn.classList.add('active');
+                }
+            }
+            // Update back button text
+            if (dom.backBtn) {
+                dom.backBtn.lastChild.textContent = currentLanguage === 'de' ? 'Zurück zur Rezeptübersicht' : 'Back to Recipe Overview';
+            }
+        }
+
+        function getLocalized(obj) {
+            if (!obj) return "";
+            if (typeof obj === 'string') return obj;
+            return obj[currentLanguage] || obj['de'] || "";
+        }
+
+        function getLocalizedList(obj) {
+            if (!obj) return [];
+            if (Array.isArray(obj)) return obj;
+            return obj[currentLanguage] || obj['de'] || [];
+        }
+
+        // --- RENDER LOGIC (Updates the recipe view) ---
+
+        function renderRecipe() {
+            if (!currentRecipe) return;
+
+            // 1. Header
+            const dateStr = new Date(currentRecipe.metadata.timestamp).toLocaleDateString(currentLanguage === 'de' ? 'de-DE' : 'en-US');
+            const langBadge = currentRecipe.metadata.language.toUpperCase();
+            const time = currentRecipe.metadata.time || 30;
+
+            dom.header.innerHTML = `
+                <span class="badge">${langBadge}</span>
+                <h1>${currentRecipe.metadata.title}</h1>
+                <p style="color:var(--text-muted); font-size:0.875rem;">
+                   ${currentLanguage === 'de' ? 'Erstellt am' : 'Created at'} ${dateStr} • 🕒 ${time} Min
+                </p>
+            `;
+
+            // Set background image or fallback to orange gradient
+            if (currentRecipe.metadata.image) {
+                dom.header.style.background = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${currentRecipe.metadata.image}) no-repeat center center / cover`;
+            } else {
+                dom.header.style.background = `linear-gradient(to right, rgba(249, 115, 22, 0.2), rgba(220, 38, 38, 0.2))`;
+            }
+
+            // 2. Extract components
+            const ingredients = currentRecipe.components.find(c => c.type === 'ingredients');
+            const nutrients = currentRecipe.components.find(c => c.type === 'nutrients');
+            const steps = currentRecipe.components.filter(c => c.type === 'step');
+
+            // 3. Ingredients (with Checkbox and localStorage state)
+            const ingredientsTitle = currentLanguage === 'de' ? 'Zutaten' : 'Ingredients';
+            document.querySelector('#ingredients-card .card-title').childNodes[1].nodeValue = ` ${ingredientsTitle}`;
+
+            if (ingredients) {
+                dom.ingCard.classList.remove('hidden');
+                const items = getLocalizedList(ingredients.items);
+                dom.ingList.innerHTML = items.map((item, index) => {
+                    const storageKey = getIngredientStorageKey(index);
+                    const isChecked = localStorage.getItem(storageKey) === 'true';
+                    const checkedAttribute = isChecked ? 'checked' : '';
+                    const classChecked = isChecked ? 'checked' : '';
+                    
+                    return `
+                        <li class="ingredient-item ${classChecked}" id="ing-item-${index}">
+                            <input type="checkbox" data-index="${index}" id="ing-check-${index}" ${checkedAttribute}>
+                            <label for="ing-check-${index}">${item}</label>
+                        </li>
+                    `;
+                }).join('');
+            } else {
+                dom.ingCard.classList.add('hidden');
+            }
+
+            // 4. Nutrients and Preparation Title
+            const preparationTitle = currentLanguage === 'de' ? 'Zubereitung' : 'Preparation';
+            document.querySelector('#recipe-view .grid .col-span-2 .card-header .card-title').textContent = preparationTitle;
+
+            if (nutrients) {
+                dom.nutrientsCard.classList.remove('hidden');
+                dom.nutrientsTitle.textContent = getLocalized(nutrients.titleText) || (currentLanguage === 'de' ? 'Nährwerte' : 'Nutrition');
+                dom.nutrientsGrid.innerHTML = Object.entries(nutrients.data).map(([k, v]) => `
+                    <div class="nutrient-box">
+                        <div class="nutrient-label">${k}</div>
+                        <div class="nutrient-value">${v}</div>
+                    </div>
+                `).join('');
+            } else {
+                dom.nutrientsCard.classList.add('hidden');
+            }
+
+            // 5. Steps
+            dom.stepsContainer.innerHTML = steps.map((step, index) => {
+                const stepHeading = getLocalized(step.heading);
+                const stepText = getLocalized(step.text);
+                
+                return `
+                    <div class="step-item">
+                        <div class="step-number">${index + 1}</div>
+                        <div class="step-content">
+                            <h3>${stepHeading}</h3>
+                            <p>${stepText}</p>
+                            ${index < steps.length - 1 ? '<div class="step-separator"></div>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- INITIALIZATION ---
+
+        function initialize() {
+            // Global listener for ingredient checklist changes
+            dom.ingList.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox') {
+                    const checkbox = e.target;
+                    const listItem = checkbox.closest('.ingredient-item');
+                    const index = parseInt(checkbox.dataset.index);
+                    toggleIngredient(listItem, index, checkbox.checked);
+                }
+            });
+
+            // Permanent listeners for Copy buttons
+            document.getElementById('btn-copy-json').addEventListener('click', copyJson);
+            document.getElementById('btn-copy-text').addEventListener('click', copyText);
+
+            // Check URL for ID on load
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+
+            if (id) {
+                fetchRecipeFromId(id);
+            } else {
+                // If no ID in URL, show error
+                showError(null);
+            }
+        }
+
+        // --- COPY FUNCTIONS (Clipboard helpers) ---
+        function copyToClipboard(text, successMessage) {
+             try {
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = text;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                showToast(successMessage);
+            } catch (err) {
+                console.error('Kopieren fehlgeschlagen:', err);
+                showToast(currentLanguage === 'de' ? 'Kopieren fehlgeschlagen.' : 'Copy failed.', 'error');
+            }
+        }
+        
+        function copyJson() {
+            if (!currentRecipe) return;
+            const text = JSON.stringify(currentRecipe, null, 2);
+            copyToClipboard(text, currentLanguage === 'de' ? 'JSON kopiert!' : 'JSON copied!');
+        }
+
+        function copyText() {
+            if (!currentRecipe) return;
+
+            const nutrients = currentRecipe.components.find(c => c.type === 'nutrients');
+            const ingredients = currentRecipe.components.find(c => c.type === 'ingredients');
+            const steps = currentRecipe.components.filter(c => c.type === 'step');
+
+            let text = `${currentRecipe.metadata.title}\n${'='.repeat(currentRecipe.metadata.title.length)}\n\n`;
+
+            if (ingredients) {
+                text += (currentLanguage === 'de' ? 'ZUTATEN:\n' : 'INGREDIENTS:\n');
+                getLocalizedList(ingredients.items).forEach(item => {
+                    text += `• ${item}\n`;
+                });
+                text += '\n';
+            }
+
+            if (steps.length > 0) {
+                text += (currentLanguage === 'de' ? 'ZUBEREITUNG:\n' : 'PREPARATION:\n');
+                steps.forEach((step, index) => {
+                    text += `${index + 1}. ${getLocalized(step.heading)}\n`;
+                    text += `   ${getLocalized(step.text)}\n\n`;
+                });
+            }
+
+            if (nutrients) {
+                text += (currentLanguage === 'de' ? 'NÄHRWERTE:\n' : 'NUTRITION:\n');
+                Object.entries(nutrients.data).forEach(([key, value]) => {
+                    text += `• ${key}: ${value}\n`;
+                });
+            }
+            
+            copyToClipboard(text, currentLanguage === 'de' ? 'Text kopiert!' : 'Text copied!');
+        }
+
+        // Start the application
+        initialize();
+    </script>
+</body>
+</html>
